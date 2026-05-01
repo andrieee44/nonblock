@@ -1,0 +1,152 @@
+@startuml
+hide circle
+hide empty members
+
+entity users {
+	user_id BIGINT PK
+	--
+	email VARCHAR(320)
+	first_name VARCHAR(255)
+	last_name VARCHAR(255)
+	password_hash VARBINARY(255)
+	middle_name VARCHAR(255)
+}
+
+entity users_sessions {
+    session_hash BINARY(32) PK
+	user_id BIGINT FK
+	--
+	expires_at DATETIME(6)
+}
+
+entity teachers {
+    teacher_id BIGINT PK
+    --
+    first_name VARCHAR(255)
+	last_name VARCHAR(255)
+	middle_name VARCHAR(255)
+}
+
+entity schools {
+    school_id BIGINT PK
+    --
+    name VARCHAR(255)
+}
+
+entity departments {
+    department_id BIGINT PK
+    school_id BIGINT FK
+    --
+    name VARCHAR(255)
+}
+
+entity semesters {
+	semester_id BIGINT PK
+	--
+	name VARCHAR(255)
+	start_date DATE
+	end_date DATE
+	min_units UNSIGNED TINYINT
+	max_units UNSIGNED TINYINT
+	hard_max_units UNSIGNED TINYINT
+}
+
+entity programs {
+    program_id BIGINT PK
+    department_id BIGINT FK
+    --
+    major_units UNSIGNED TINYINT
+    elective_units UNSIGNED TINYINT
+    name VARCHAR(255)
+}
+
+entity courses {
+    course_id BIGINT PK
+    --
+    name VARCHAR(255)
+	units UNSIGNED TINYINT
+}
+
+entity fixed_electives {
+    course_id BIGINT FK
+}
+
+entity prerequisites {
+    course_id BIGINT FK
+    prerequisite_course_id BIGINT FK
+}
+
+entity corequisites {
+    course_id BIGINT FK
+    corequisite_course_id BIGINT FK
+}
+
+entity mutexes {
+    course_id BIGINT FK
+    mutex_course_id BIGINT FK
+}
+
+entity programs_courses {
+    program_id BIGINT FK
+    course_id BIGINT FK
+    --
+    course_type ENUM('major', 'elective')
+}
+
+entity sections {
+    section_id BIGINT PK
+    course_id BIGINT FK
+    semester_id BIGINT FK
+    teacher_id BIGINT FK
+    --
+	name VARCHAR(255)
+    start_time TIME(0)
+    end_time TIME(0)
+    monday BOOLEAN
+    tuesday BOOLEAN
+    wednesday BOOLEAN
+    thursday BOOLEAN
+    friday BOOLEAN
+    saturday BOOLEAN
+    sunday BOOLEAN
+}
+
+entity calendars {
+	calendar_id BIGINT PK
+	owner_user_id BIGINT FK
+	--
+	name VARCHAR(255)
+}
+
+entity calendars_semesters {
+    calendar_semester_id BIGINT PK
+    calendar_id BIGINT FK
+    semester_id BIGINT FK
+    program_id BIGINT FK
+}
+
+entity calendars_semesters_sections {
+    calendar_semester_id BIGINT FK
+    section_id BIGINT FK
+}
+
+users ||--o{ users_sessions
+users ||--o{ calendars
+schools ||--|{ departments
+departments ||--|{ programs
+programs ||--|{ programs_courses
+courses ||--|{ programs_courses
+courses ||--|{ sections
+courses ||--|{ fixed_electives
+courses ||--|{ prerequisites
+courses ||--|{ corequisites
+courses ||--|{ mutexes
+semesters ||--|{ sections
+teachers ||--|{ sections
+calendars ||--o{ calendars_semesters
+semesters ||--o{ calendars_semesters
+programs ||--o{ calendars_semesters
+calendars_semesters ||--o{ calendars_semesters_sections
+sections ||--o{ calendars_semesters_sections
+
+@enduml

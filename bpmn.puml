@@ -1,0 +1,43 @@
+@startuml
+actor Admin
+actor User
+participant Frontend
+participant Backend
+database DB
+
+== Seeding ==
+Admin -> Frontend: Access Admin UI
+Frontend -> Backend: Submit seed data
+Backend -> DB: Insert schools, departments,\nprograms, courses, teachers,\nsemesters, sections
+Backend -> Backend: Validate seeded data
+alt Invalid data
+    Backend -> Frontend: Notify admin of issues
+    Frontend -> Admin: Display issues
+else Valid
+    Backend -> Frontend: Data is live
+end
+
+== User Flow ==
+User -> Frontend: Sign up / Log in
+Frontend -> Backend: Register / Authenticate
+Backend -> DB: Insert / Query user
+Backend -> Frontend: Return session
+
+User -> Frontend: Create calendar
+Frontend -> Backend: POST calendar
+Backend -> DB: Insert calendar
+
+User -> Frontend: Add calendar semester\n(pick program + semester)
+Frontend -> Backend: POST calendar_semester
+Backend -> DB: Insert calendars_semesters
+
+loop Add / Remove sections
+    User -> Frontend: Add or remove section
+    Frontend -> Backend: POST / DELETE calendars_semesters_sections
+    Backend -> DB: Insert / Delete section
+    Backend -> Backend: Evaluate rules\n(prerequisites, corequisites,\nmutexes, unit caps,\nfixed electives, major quota)
+    Backend -> Frontend: Return issues list (non-blocking)
+    Frontend -> User: Display flagged issues
+end
+
+@enduml
