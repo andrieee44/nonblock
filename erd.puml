@@ -100,15 +100,15 @@ entity sections {
     teacher_id BIGINT FK
     --
 	name VARCHAR(255)
+}
+
+entity timetables {
+    timetable_id BIGINT PK
+    section_id BIGINT FK
+    --
+    day ENUM('MON','TUE','WED','THU','FRI','SAT','SUN')
     start_time TIME(0)
     end_time TIME(0)
-    monday BOOLEAN
-    tuesday BOOLEAN
-    wednesday BOOLEAN
-    thursday BOOLEAN
-    friday BOOLEAN
-    saturday BOOLEAN
-    sunday BOOLEAN
 }
 
 entity calendars {
@@ -148,5 +148,6 @@ semesters ||--o{ calendars_semesters
 programs ||--o{ calendars_semesters
 calendars_semesters ||--o{ calendars_semesters_sections
 sections ||--o{ calendars_semesters_sections
+sections ||--|{ timetables
 
 @enduml
