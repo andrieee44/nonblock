@@ -40,35 +40,33 @@ entity departments {
     name VARCHAR(255)
 }
 
+entity academic_terms {
+    academic_term_id BIGINT PK
+    name VARCHAR(255)
+}
+
 entity semesters {
 	semester_id BIGINT PK
+	academic_term_id BIGINT FK
 	--
-	name VARCHAR(255)
-	start_date DATE
-	end_date DATE
-	min_units UNSIGNED TINYINT
-	max_units UNSIGNED TINYINT
-	hard_max_units UNSIGNED TINYINT
+	academic_year UNSIGNED INT
+	max_units UNSIGNED INT
 }
 
 entity programs {
     program_id BIGINT PK
     department_id BIGINT FK
     --
-    major_units UNSIGNED TINYINT
-    elective_units UNSIGNED TINYINT
     name VARCHAR(255)
 }
 
 entity courses {
     course_id BIGINT PK
     --
+    course_code VARCHAR(255)
     name VARCHAR(255)
-	units UNSIGNED TINYINT
-}
-
-entity fixed_electives {
-    course_id BIGINT FK
+	units UNSIGNED INT
+	min_year_standing UNSIGNED INT
 }
 
 entity prerequisites {
@@ -81,16 +79,16 @@ entity corequisites {
     corequisite_course_id BIGINT FK
 }
 
-entity mutexes {
-    course_id BIGINT FK
-    mutex_course_id BIGINT FK
+entity prospectuses {
+    prospectus_id BIGINT PK
+    program_id BIGINT FK
+    --
+	academic_year UNSIGNED INT
 }
 
-entity programs_courses {
-    program_id BIGINT FK
+entity prospectuses_courses {
+    prospectus_id BIGINT FK
     course_id BIGINT FK
-    --
-    course_type ENUM('major', 'elective')
 }
 
 entity sections {
@@ -98,8 +96,12 @@ entity sections {
     course_id BIGINT FK
     semester_id BIGINT FK
     teacher_id BIGINT FK
+    reserved_department_id BIGINT FK
     --
 	name VARCHAR(255)
+    current_students UNSIGNED INT
+    max_students UNSIGNED INT
+    status ENUM('BLOCK', 'REGULAR', 'HONORARIUM', 'PETITION', 'DISSOLVED')
 }
 
 entity timetables {
@@ -134,14 +136,15 @@ users ||--o{ users_sessions
 users ||--o{ calendars
 schools ||--|{ departments
 departments ||--|{ programs
-programs ||--|{ programs_courses
-courses ||--|{ programs_courses
+departments ||--|{ sections
+programs ||--|{ prospectuses
+prospectuses ||--|{ prospectuses_courses
+courses ||--|{ prospectuses_courses
 courses ||--|{ sections
-courses ||--|{ fixed_electives
 courses ||--|{ prerequisites
 courses ||--|{ corequisites
-courses ||--|{ mutexes
 semesters ||--|{ sections
+academic_terms ||--|{ semesters
 teachers ||--|{ sections
 calendars ||--o{ calendars_semesters
 semesters ||--o{ calendars_semesters
