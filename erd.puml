@@ -89,6 +89,7 @@ entity prospectuses {
 entity prospectuses_courses {
     prospectus_id BIGINT FK
     course_id BIGINT FK
+    academic_term_id BIGINT FK
 }
 
 entity sections {
@@ -145,6 +146,7 @@ courses ||--|{ prerequisites
 courses ||--|{ corequisites
 semesters ||--|{ sections
 academic_terms ||--|{ semesters
+academic_terms ||--|{ prospectuses_courses
 teachers ||--|{ sections
 calendars ||--o{ calendars_semesters
 semesters ||--o{ calendars_semesters
