@@ -66,7 +66,6 @@ entity courses {
     course_code VARCHAR(255)
     name VARCHAR(255)
 	units UNSIGNED INT
-	min_year_standing UNSIGNED INT
 }
 
 entity prerequisites {
@@ -87,9 +86,11 @@ entity prospectuses {
 }
 
 entity prospectuses_courses {
+    prospectus_course_id BIGINT PK
     prospectus_id BIGINT FK
     course_id BIGINT FK
     academic_term_id BIGINT FK
+    min_year_standing UNSIGNED INT
 }
 
 entity sections {
@@ -116,7 +117,7 @@ entity timetables {
 
 entity calendars {
 	calendar_id BIGINT PK
-	owner_user_id BIGINT FK
+	user_id BIGINT FK
 	--
 	name VARCHAR(255)
 }
@@ -131,6 +132,31 @@ entity calendars_semesters {
 entity calendars_semesters_sections {
     calendar_semester_id BIGINT FK
     section_id BIGINT FK
+}
+
+entity completed_courses {
+    user_id BIGINT FK
+    prospectus_course_id BIGINT FK
+    semester_id BIGINT FK
+}
+
+entity groups {
+    group_id BIGINT PK
+    --
+    name VARCHAR(255)
+}
+
+entity groups_courses {
+    group_id BIGINT FK
+    course_id BIGINT FK
+}
+
+entity prospectuses_groups {
+    prospectus_group_id BIGINT PK
+    prospectus_id BIGINT FK
+    group_id BIGINT FK
+    academic_term_id BIGINT FK
+    min_year_standing UNSIGNED INT
 }
 
 users ||--o{ users_sessions
@@ -154,5 +180,13 @@ programs ||--o{ calendars_semesters
 calendars_semesters ||--o{ calendars_semesters_sections
 sections ||--o{ calendars_semesters_sections
 sections ||--|{ timetables
+users ||--o{ completed_courses
+prospectuses_courses ||--o{ completed_courses
+semesters ||--o{ completed_courses
+groups ||--|{ groups_courses
+courses ||--|{ groups_courses
+prospectuses ||--|{ prospectuses_groups
+groups ||--|{ prospectuses_groups
+academic_terms ||--|{ prospectuses_groups
 
 @enduml
