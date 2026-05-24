@@ -1,0 +1,22 @@
+@startuml
+
+actor Admin
+participant System
+database DB
+
+== Data Seeding ==
+Admin -> System: Submit seed data\n(schools, departments, programs,\ncourses, teachers, semesters, sections)
+System -> System: Validate data
+
+alt Invalid
+    System -> Admin: Notify issues
+    Admin -> System: Resubmit corrected data
+else Valid
+    System -> DB: Save data
+end
+
+== Student Records Seeding ==
+Admin -> System: Submit completed courses\n(from_admin = TRUE)
+System -> DB: Save completed courses
+
+@enduml

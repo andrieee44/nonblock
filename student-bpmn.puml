@@ -1,0 +1,18 @@
+@startuml
+
+actor Admin
+actor User
+participant System
+database DB
+
+== Student Self-Seeding ==
+User -> System: Submit own completed courses\n(from_admin = FALSE)
+System -> System: Check for conflicts\nwith admin records
+
+alt Conflict found
+    System -> User: Warn user - admin record differences\nbut user record takes priority
+else No conflict
+    System -> DB: Save user record
+end
+
+@enduml

@@ -1,0 +1,36 @@
+@startuml
+
+actor User
+participant System
+database DB
+
+== Anonymous Mode ==
+User -> System: Build a schedule
+note right of User: No account needed,\nCalendar is session only.
+User -> System: Prompted to sign up to save
+
+alt Signs up
+    System -> DB: Save calendar to new account
+else Declines
+    System -> User: Calendar discarded on exit
+end
+
+== Authenticated Mode ==
+User -> System: Sign up or log in
+System -> User: Account created or session resumed
+User -> System: Create a calendar
+User -> System: Select a program and semester
+System -> User: Load prospectus\n(advisory only - terms, year standing)
+
+loop Building schedule
+    User -> System: Add or remove a section
+    System -> System: Evaluate rules\n(prerequisites, corequisites,\nunit cap, minimum year standing, etc...)
+    alt Issues found
+        System -> User: Display non-blocking warnings\n(user may proceed anyway)
+    end
+end
+
+User -> System: Save calendar
+System -> DB: Store calendar to account
+
+@enduml

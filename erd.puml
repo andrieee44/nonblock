@@ -138,6 +138,8 @@ entity completed_courses {
     user_id BIGINT FK
     prospectus_course_id BIGINT FK
     semester_id BIGINT FK
+    --
+    from_admin BOOLEAN
 }
 
 entity groups {
